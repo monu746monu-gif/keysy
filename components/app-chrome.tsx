@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react"
 import { useMountEffect } from "@/hooks/use-mount-effect"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { motion } from "motion/react"
@@ -212,7 +213,13 @@ function SiteHeader() {
               className={cn("cursor-pointer", logoClass)}
               style={logoStyle}
             >
-              <img src="/kee.png" alt="" className="h-9 w-9 object-contain" />
+              <Image
+                src="/keysy-logo.png"
+                alt=""
+                width={160}
+                height={96}
+                className="h-10 w-16 object-contain"
+              />
               <span>Keysy</span>
             </button>
           ) : (
@@ -221,7 +228,13 @@ function SiteHeader() {
               className={logoClass}
               style={logoStyle}
             >
-              <img src="/kee.png" alt="" className="h-9 w-9 object-contain" />
+              <Image
+                src="/keysy-logo.png"
+                alt=""
+                width={160}
+                height={96}
+                className="h-10 w-16 object-contain"
+              />
               <span>Keysy</span>
             </Link>
           )}

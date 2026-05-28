@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useEffect, useState } from "react"
 import { readTypingCount } from "@/lib/typing-count"
 import { MacBookMockup } from "@/components/macbook-mockup"
@@ -18,10 +19,13 @@ export default function Page() {
         <MacBookMockup videoSrc="/keeby-demo.mp4" className="order-1" />
 
         <section className="order-2 flex flex-col items-center text-center lg:items-start lg:text-left">
-          <img
-            src="/kee.png"
+          <Image
+            src="/keysy-logo.png"
             alt="Keysy logo"
-            className="mb-5 h-20 w-20 object-contain md:h-24 md:w-24"
+            width={192}
+            height={115}
+            priority
+            className="mb-5 h-24 w-40 object-contain md:h-28 md:w-48"
           />
           <h1
             className="max-w-xl text-5xl font-light leading-tight text-[#f97316] md:text-7xl"

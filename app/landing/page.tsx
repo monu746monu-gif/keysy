@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import type { CSSProperties } from "react"
 import { motion, useScroll, useMotionValueEvent } from "motion/react"
+import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowUpRight } from "@phosphor-icons/react"
@@ -212,6 +213,13 @@ function TopBar() {
             className="group flex items-center gap-4 px-5"
             style={{ borderRight: `1px solid ${CREAM}10` }}
           >
+            <Image
+              src="/keysy-logo.png"
+              alt=""
+              width={112}
+              height={67}
+              className="h-8 w-14 object-contain"
+            />
             <span
             className="font-(family-name:--font-doto) text-[24px] leading-none font-bold transition-[text-shadow] duration-300 group-hover:[text-shadow:0_0_18px_var(--green-glow)]"
               style={
