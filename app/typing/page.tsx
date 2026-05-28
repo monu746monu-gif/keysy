@@ -11,7 +11,6 @@ import { TypingTest } from "@/components/typing-test"
 import { useSettings, SOUND_PACKS } from "@/components/settings-context"
 import { Loading } from "@/components/ui/loader"
 import { CoinBadge, RewardPopup } from "@/components/coin-rewards"
-import type { ResultStats } from "@/components/results-screen"
 import { calculateCoinReward, getCoinRewardMessage, readStoredCoins, writeStoredCoins } from "@/lib/coins"
 
 export default function TypingPage() {
@@ -56,8 +55,12 @@ export default function TypingPage() {
     }, [isFinished])
 
     useEffect(() => {
-        setCoins(readStoredCoins())
+        const timer = window.setTimeout(() => {
+            setCoins(readStoredCoins())
+        }, 0)
+
         return () => {
+            window.clearTimeout(timer)
             if (rewardTimeoutRef.current) clearTimeout(rewardTimeoutRef.current)
         }
     }, [])
@@ -82,8 +85,8 @@ export default function TypingPage() {
         setMode(m)
     }, [])
 
-    const handleTestComplete = useCallback((stats: ResultStats) => {
-        const reward = calculateCoinReward(stats.accuracy)
+    const handleTestComplete = useCallback(() => {
+        const reward = calculateCoinReward()
         const message = getCoinRewardMessage(reward)
 
         setCoins((current) => {

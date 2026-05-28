@@ -1,14 +1,12 @@
 export const COINS_STORAGE_KEY = "keysy-total-coins"
+export const TYPING_CARD_POINTS_TARGET = 500
 
-export function calculateCoinReward(accuracy: number): number {
-  if (accuracy >= 90) return 10
-  if (accuracy >= 80) return 5
-  return 0
+export function calculateCoinReward(): number {
+  return 5
 }
 
 export function getCoinRewardMessage(reward: number): string {
-  if (reward > 0) return `You won ${reward} coins!`
-  return "Try again! Get 80% accuracy to win coins."
+  return `You won ${reward} points!`
 }
 
 export function readStoredCoins(): number {

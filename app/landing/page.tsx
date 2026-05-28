@@ -20,6 +20,8 @@ import { SoundWave } from "./_components/SoundWave"
 import { FinalCTA } from "./_components/FinalCTA"
 import { FAQ } from "./_components/FAQ"
 import { Footer } from "./_components/Footer"
+import { CoinBadge } from "@/components/coin-rewards"
+import { readStoredCoins } from "@/lib/coins"
 
 type LandingStyle = CSSProperties & Record<`--${string}`, string>
 
@@ -66,6 +68,7 @@ const landingStyle: LandingStyle = {
 
 export default function LandingPage() {
   const router = useRouter()
+  const [coins, setCoins] = useState(0)
 
   useEffect(() => {
     const root = document.documentElement
@@ -104,11 +107,20 @@ export default function LandingPage() {
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [router])
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setCoins(readStoredCoins())
+    }, 0)
+
+    return () => window.clearTimeout(timer)
+  }, [])
+
   return (
     <div
       className="landing-theme relative min-h-screen overflow-x-hidden font-sans"
       style={landingStyle}
     >
+      <CoinBadge coins={coins} />
       <BackgroundGrid />
       <NoiseOverlay />
       <TopBar />

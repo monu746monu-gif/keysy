@@ -789,7 +789,9 @@ function Key({
   const [isPointerDownVisual, setIsPointerDownVisual] = useState(false);
   const visuallyPressed = isPressed || isPointerDownVisual;
   const keyVariantSlot = resolveKeyVariant(themeName, keyCode);
-  const keyVariant = KEYBOARD_THEMES[themeName].variants[keyVariantSlot];
+  const keyVariant = keyCode === KEYCODE.Escape
+    ? { bg: "#f97316", text: "#fff7ed" }
+    : KEYBOARD_THEMES[themeName].variants[keyVariantSlot];
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLButtonElement>) => {
     if (!keyCode || event.button !== 0) {

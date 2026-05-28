@@ -503,7 +503,7 @@ export function TypingTest(props: TypingTestProps) {
                   className="absolute inset-0 z-20 flex cursor-pointer items-center justify-center"
                   onClick={() => inputRef.current?.focus()}
                 >
-                  <span className="flex items-center gap-2 text-sm font-medium text-primary">
+                  <span className="flex items-center gap-2 text-sm font-bold text-[#f97316]">
                     <IconPointer size={16} />
                     Click here or press Enter to focus
                   </span>

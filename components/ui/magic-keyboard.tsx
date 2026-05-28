@@ -996,6 +996,7 @@ const Key = ({
 }) => {
     const { pressedKeys, pressKey, releaseKey, triggerPointerHaptic } = useKeyboard();
     const isPressed = keyCode ? pressedKeys.has(keyCode) : false;
+    const isEscape = keyCode === "Escape";
 
     const handleMouseDown = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
@@ -1024,8 +1025,10 @@ const Key = ({
                 className={cn(
                     "flex h-6 w-6 cursor-pointer items-center justify-center rounded-[3.5px] bg-gray-100 transition-all duration-75 active:scale-[0.98] dark:bg-neutral-900 focus:outline-none",
                     "shadow-[0px_0px_1px_0px_rgba(0,0,0,0.5),0px_1px_1px_0px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(255,255,255,1)_inset] dark:shadow-[0px_0px_1px_0px_rgba(255,255,255,0.2),0px_1px_1px_0px_rgba(0,0,0,0.5),0px_1px_0px_0px_rgba(255,255,255,0.05)_inset]",
+                    isEscape && "bg-[#f97316] dark:bg-[#f97316]",
                     isPressed && [
                         "scale-[0.98] bg-gray-100/80 shadow-[0px_0px_1px_0px_rgba(0,0,0,0.5),0px_1px_1px_0px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(255,255,255,0.5)] dark:bg-neutral-800",
+                        isEscape && "bg-[#ea580c] dark:bg-[#ea580c]",
                     ],
                     className,
                 )}
@@ -1033,6 +1036,7 @@ const Key = ({
                 <div
                     className={cn(
                         "flex h-full w-full flex-col items-center justify-center text-[3px] leading-none text-neutral-700 transition-colors [-webkit-text-size-adjust:none] [text-size-adjust:none] sm:text-[5px] dark:text-neutral-300",
+                        isEscape && "text-orange-50 dark:text-orange-50",
                         isPressed && "font-bold",
                         childrenClassName,
                     )}
