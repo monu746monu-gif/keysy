@@ -100,7 +100,7 @@ export default function TypingPage() {
         if (rewardTimeoutRef.current) clearTimeout(rewardTimeoutRef.current)
         rewardTimeoutRef.current = setTimeout(() => {
             setRewardMessage(null)
-        }, 3000)
+        }, 5200)
     }, [])
 
     const showFooter = !isFinished && showKeyboard

@@ -37,14 +37,34 @@ export default function Page() {
               priority
               className="mb-5 h-24 w-40 object-contain md:h-28 md:w-48"
             />
-            <h1
-              className="max-w-xl text-5xl font-light leading-tight text-[#f97316] md:text-7xl"
-              style={{ fontFamily: "'Comic Sans MS', 'Trebuchet MS', cursive" }}
-            >
-              Your keyboard, but better
-            </h1>
+            <div className="flex max-w-xl flex-col items-center gap-3 lg:items-start">
+              <div className="flex flex-col items-center gap-4 md:flex-row md:items-end lg:items-center">
+                <h1
+                  className="text-5xl font-light leading-tight text-[#f97316] md:text-7xl"
+                  style={{
+                    fontFamily: "'Comic Sans MS', 'Trebuchet MS', cursive",
+                  }}
+                >
+                  Your keyboard, but better
+                </h1>
+                <div className="relative shrink-0 pt-10">
+                  <div className="absolute -top-1 left-1/2 z-10 w-max max-w-36 -translate-x-1/2 rounded-2xl border border-orange-200 bg-white px-3 py-2 text-center text-xs font-bold text-orange-950 shadow-lg shadow-orange-950/10">
+                    helllo are u ready?
+                    <span className="absolute -bottom-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 border-r border-b border-orange-200 bg-white" />
+                  </div>
+                  <Image
+                    src="/111-sticker.png"
+                    alt=""
+                    width={124}
+                    height={128}
+                    className="h-24 w-24 object-contain drop-shadow-xl md:h-28 md:w-28"
+                  />
+                </div>
+              </div>
+            </div>
             <div className="mt-5 font-mono text-xs uppercase tracking-[0.18em] text-black/60">
-              typing count <span className="font-semibold text-black">{tryCount}</span>
+              typing count{" "}
+              <span className="font-semibold text-black">{tryCount}</span>
             </div>
             <Link
               href="/typing"
