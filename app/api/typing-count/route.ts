@@ -7,13 +7,14 @@ export const dynamic = "force-dynamic"
 
 const DATA_PATH = path.join(process.cwd(), "data", "typing-count.json")
 const REDIS_KEY = "keysy:typing-count"
+let fileCountQueue = Promise.resolve()
 
 type CountFile = {
   count: number
 }
 
 export async function GET() {
-  return NextResponse.json({ count: await readCount() })
+  return countResponse(await readCount())
 }
 
 export async function POST(request: Request) {
@@ -21,10 +22,21 @@ export async function POST(request: Request) {
   const increment = normalizeIncrement(body?.increment)
 
   if (increment <= 0) {
-    return NextResponse.json({ count: await readCount() })
+    return countResponse(await readCount())
   }
 
-  return NextResponse.json({ count: await addCount(increment) })
+  return countResponse(await addCount(increment))
+}
+
+function countResponse(count: number) {
+  return NextResponse.json(
+    { count },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+      },
+    },
+  )
 }
 
 function normalizeIncrement(value: unknown) {
@@ -35,9 +47,13 @@ function normalizeIncrement(value: unknown) {
 
 async function readCount() {
   if (hasRedisConfig()) {
-    const result = await redisCommand<number | string | null>(["GET", REDIS_KEY])
-    const parsed = typeof result === "number" ? result : Number.parseInt(result ?? "0", 10)
-    return Number.isFinite(parsed) ? parsed : 0
+    try {
+      const result = await redisCommand<number | string | null>(["GET", REDIS_KEY])
+      const parsed = typeof result === "number" ? result : Number.parseInt(result ?? "0", 10)
+      return Number.isFinite(parsed) ? parsed : 0
+    } catch {
+      return readFileCount()
+    }
   }
 
   return readFileCount()
@@ -45,14 +61,26 @@ async function readCount() {
 
 async function addCount(increment: number) {
   if (hasRedisConfig()) {
-    const result = await redisCommand<number>(["INCRBY", REDIS_KEY, increment])
-    return typeof result === "number" && Number.isFinite(result) ? result : readCount()
+    try {
+      const result = await redisCommand<number>(["INCRBY", REDIS_KEY, increment])
+      return typeof result === "number" && Number.isFinite(result) ? result : readCount()
+    } catch {
+      return addFileCount(increment)
+    }
   }
 
-  const current = await readFileCount()
-  const next = current + increment
-  await writeFileCount(next)
-  return next
+  return addFileCount(increment)
+}
+
+async function addFileCount(increment: number) {
+  const nextCount = fileCountQueue.then(async () => {
+    const current = await readFileCount()
+    const next = current + increment
+    await writeFileCount(next)
+    return next
+  })
+  fileCountQueue = nextCount.then(() => undefined, () => undefined)
+  return nextCount
 }
 
 function hasRedisConfig() {

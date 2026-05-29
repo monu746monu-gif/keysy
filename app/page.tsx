@@ -3,7 +3,11 @@
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
-import { readGlobalTypingCount } from "@/lib/typing-count"
+import {
+  readGlobalTypingCount,
+  readTypingCount,
+  TYPING_COUNT_CHANGE_EVENT,
+} from "@/lib/typing-count"
 import { readStoredCoins } from "@/lib/coins"
 import { CoinBadge } from "@/components/coin-rewards"
 import { MacBookMockup } from "@/components/macbook-mockup"
@@ -13,12 +17,38 @@ export default function Page() {
   const [coins, setCoins] = useState(0)
 
   useEffect(() => {
-    void readGlobalTypingCount().then(setTryCount)
+    const refreshTypingCount = () => {
+      void readGlobalTypingCount().then(setTryCount)
+    }
+    const handleTypingCountChange = () => {
+      setTryCount(readTypingCount())
+    }
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "keysy-typing-count") {
+        setTryCount(readTypingCount())
+      }
+    }
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") refreshTypingCount()
+    }
+
+    refreshTypingCount()
+    window.addEventListener(TYPING_COUNT_CHANGE_EVENT, handleTypingCountChange)
+    window.addEventListener("storage", handleStorage)
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    const refreshTimer = window.setInterval(refreshTypingCount, 15000)
+
     const timer = window.setTimeout(() => {
       setCoins(readStoredCoins())
     }, 0)
 
-    return () => window.clearTimeout(timer)
+    return () => {
+      window.clearTimeout(timer)
+      window.clearInterval(refreshTimer)
+      window.removeEventListener(TYPING_COUNT_CHANGE_EVENT, handleTypingCountChange)
+      window.removeEventListener("storage", handleStorage)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
   }, [])
 
   return (

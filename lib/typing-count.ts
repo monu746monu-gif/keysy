@@ -1,4 +1,5 @@
 export const TYPING_COUNT_KEY = "keysy-typing-count"
+export const TYPING_COUNT_CHANGE_EVENT = "keysy-typing-count-change"
 
 const TYPING_COUNT_API = "/api/typing-count"
 const FLUSH_INTERVAL_MS = 1500
@@ -6,6 +7,7 @@ const FLUSH_BATCH_SIZE = 10
 
 let pendingIncrements = 0
 let flushTimer: ReturnType<typeof setTimeout> | null = null
+let lifecycleListenersInstalled = false
 
 export function readTypingCount(): number {
   if (typeof window === "undefined") return 0
@@ -23,9 +25,12 @@ export async function readGlobalTypingCount(): Promise<number> {
     if (!response.ok) return readTypingCount()
 
     const data = await response.json() as { count?: unknown }
-    return typeof data.count === "number" && Number.isFinite(data.count)
+    const serverCount = typeof data.count === "number" && Number.isFinite(data.count)
       ? data.count
-      : readTypingCount()
+      : 0
+    const count = Math.max(serverCount, readTypingCount())
+    writeTypingCount(count)
+    return count
   } catch {
     return readTypingCount()
   }
@@ -35,12 +40,14 @@ export function incrementTypingCount(): number {
   if (typeof window === "undefined") return 0
 
   const next = readTypingCount() + 1
-  window.localStorage.setItem(TYPING_COUNT_KEY, String(next))
+  writeTypingCount(next)
+  emitTypingCountChange(next)
   queueTypingCountIncrement()
   return next
 }
 
 function queueTypingCountIncrement() {
+  installLifecycleFlushListeners()
   pendingIncrements += 1
 
   if (pendingIncrements >= FLUSH_BATCH_SIZE) {
@@ -80,5 +87,23 @@ function flushTypingCount() {
     keepalive: true,
   }).catch(() => {
     pendingIncrements += increment
+  })
+}
+
+function writeTypingCount(count: number) {
+  window.localStorage.setItem(TYPING_COUNT_KEY, String(count))
+}
+
+function emitTypingCountChange(count: number) {
+  window.dispatchEvent(new CustomEvent(TYPING_COUNT_CHANGE_EVENT, { detail: count }))
+}
+
+function installLifecycleFlushListeners() {
+  if (lifecycleListenersInstalled || typeof window === "undefined") return
+
+  lifecycleListenersInstalled = true
+  window.addEventListener("pagehide", flushTypingCount)
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") flushTypingCount()
   })
 }
